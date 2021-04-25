@@ -1,11 +1,11 @@
-import json
-from queue import Queue
-from threading import Thread
-
 from telegram import Bot, Update
 from telegram.ext import Dispatcher, CommandHandler
 
 from main.settings import env
+from telegram_bot.models import ChatsCollection
+from telegram_bot.video_service import getImageData, getVideoImageFrameUrl
+
+import json
 
 
 class TelegramBot:
@@ -19,7 +19,19 @@ class TelegramBot:
         print('START!')
         print('_____________________________')
         print(context)
-        context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
+
+        chat_id = update.effective_chat.id
+        chat = ChatsCollection.find_one({'chat_id': chat_id})
+        if not chat:
+            chat = {"chat_id": chat_id}
+            image_data = getImageData()
+            chat.update(image_data)
+
+            response = ChatsCollection.insert_one(chat)
+            # we want chat obj to be the same as fetched from collection
+            chat["_id"] = response.inserted_id
+
+        context.bot.send_message(chat_id=chat_id, text="I'm a bot, please talk to me!")
 
     @staticmethod
     def setup_bot():
