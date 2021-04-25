@@ -26,11 +26,16 @@ class ImageData:
 
 
 def getVideoImageFrameUrl(video_url, frame):
+    video_url = video_url.replace(' ', '%20')
+
     if '?' in video_url:
-        video_url = video_url.split('?')[0] + '/'
+        video_url = video_url.split('?')[0]
+
+    if not video_url.endswith('/'):
+        video_url += '/'
 
     return f"{video_url}frame/{frame}"
 
 
 def bisect(min_frame, max_frame):
-    return (max_frame - min_frame) / 2
+    return round((max_frame - min_frame) / 2)

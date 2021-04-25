@@ -3,13 +3,23 @@ import requests
 from telegram_bot.models import ImageData
 
 VIDEO_API_URL = 'https://framex-dev.wadrid.net/api/video'
-VIDEO_NAME = 'Falcon Heavy Test Flight (Hosted Webcast)-wbSwFU6tY1c'
+VIDEO_NAME = 'Falcon Heavy Test Flight (Hosted Webcast)-wbSwFU6tY1c___'
 
 
 def getImageData():
     video_url = f"{VIDEO_API_URL}/{VIDEO_NAME}"
-    video_api_response = requests.get(video_url)
+    try:
+        video_api_response = requests.get(video_url)
+    except requests.exceptions.RequestException:
+        return
+
+    if video_api_response.status_code != 200:
+        return
+
     video_data = video_api_response.json()
+
+    if not video_data["frames"]:
+        return
 
     image_data = ImageData.create(video_url, video_data["frames"])
     return image_data
