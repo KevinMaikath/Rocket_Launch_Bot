@@ -1,11 +1,11 @@
+import sys
+
 from telegram import Bot, Update
 from telegram.ext import Dispatcher, CommandHandler
 
 from main.settings import env
 from telegram_bot.models import ChatsCollection
-from telegram_bot.video_service import getImageData, getVideoImageFrameUrl
-
-import json
+from telegram_bot.video_service import getImageData
 
 
 class TelegramBot:
@@ -19,19 +19,28 @@ class TelegramBot:
         print('START!')
         print('_____________________________')
         print(context)
-
         chat_id = update.effective_chat.id
-        chat = ChatsCollection.find_one({'chat_id': chat_id})
-        if not chat:
-            chat = {"chat_id": chat_id}
+
+        try:
             image_data = getImageData()
-            chat.update(image_data)
 
-            response = ChatsCollection.insert_one(chat)
-            # we want chat obj to be the same as fetched from collection
-            chat["_id"] = response.inserted_id
+            chat = ChatsCollection.find_one({'chat_id': chat_id})
+            if not chat:
+                chat = {"chat_id": chat_id}
+                chat.update(image_data.__dict__)
 
-        context.bot.send_message(chat_id=chat_id, text="I'm a bot, please talk to me!")
+                response = ChatsCollection.insert_one(chat)
+                chat["_id"] = response.inserted_id
+            else:
+                chat.update(image_data.__dict__)
+                ChatsCollection.update_one({'chat_id': chat_id}, {'$set': chat})
+
+        except:
+            context.bot.send_message(chat_id=chat_id,
+                                     text="Oops! There has been an error. Please try again later")
+        else:
+            context.bot.send_message(chat_id=chat_id,
+                                     text="Welcome! Can you help me guessing at which frame does the rocket launch?")
 
     @staticmethod
     def setup_bot():
