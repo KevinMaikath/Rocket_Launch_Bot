@@ -38,10 +38,6 @@ class TelegramBot:
 
 
 def startHandler(update, context):
-    print('_____________________________')
-    print('START!')
-    print('_____________________________')
-    print(context)
     chat_id = update.effective_chat.id
 
     image_data = getImageData()
@@ -69,7 +65,7 @@ def startHandler(update, context):
 def messageHandler(update, context):
     chat_id = update.effective_chat.id
     chat = ChatsCollection.find_one({'chat_id': chat_id})
-    if not chat or chat['image_state']['times_bisected'] == 16:
+    if not chat or chat['image_state']['times_bisected'] >= 16:
         context.bot.send_message(chat_id=chat_id, text="Write /start to start the game.")
         return
 
@@ -81,14 +77,22 @@ def messageHandler(update, context):
         chat['image_state'] = image_state.__dict__
         ChatsCollection.update_one({'chat_id': chat_id}, {'$set': chat})
 
-        askForRocketLaunch(context.bot, chat_id, image_state.current_image_url)
+        if image_state.times_bisected < 16:
+            askForRocketLaunch(context.bot, chat_id, image_state.current_image_url)
+        else:
+            sendAnswer(context.bot, chat_id, image_state.current_frame)
+
     else:
         context.bot.send_message(chat_id=chat_id, text='Please answer yes or no.')
 
 
-# Send an image and ask if the rocket has launched yet
+# Send an image while asking if the rocket has launched yet
 def askForRocketLaunch(bot, chat_id, photo_url):
     try:
         bot.send_photo(chat_id=chat_id, photo=photo_url, caption="Did the rocket launch yet? (yes / no)")
     except telegram.error.BadRequest:
         bot.send_message(chat_id=chat_id, text="Unable to send the image. Please try again or restart the game.")
+
+
+def sendAnswer(bot, chat_id, final_frame):
+    bot.send_message(chat_id=chat_id, text=f"Finished! The rocket launches at frame: {final_frame}")

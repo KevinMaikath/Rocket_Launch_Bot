@@ -57,8 +57,6 @@ def changeVideoImageFrameUrl(prev_image_url, next_frame):
     split = prev_image_url.split('/')
     split[-1] = f'{next_frame}'
     image_url = '/'.join(split)
-    print('*******')
-    print(image_url)
     return image_url
 
 
