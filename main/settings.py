@@ -14,6 +14,8 @@ from pathlib import Path
 import environ
 
 # Initialize environment variables
+from pymongo import MongoClient
+
 env = environ.Env()
 env.read_env(env.str('ENV_PATH', '.env'))
 
@@ -29,7 +31,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [env('API_URL')]
 
 # Application definition
 
@@ -40,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+    'rest_framework',
+    'telegram_bot'
 ]
 
 MIDDLEWARE = [
@@ -82,6 +85,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+MONGO_CLIENT = MongoClient("mongodb://localhost:27017/")
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
