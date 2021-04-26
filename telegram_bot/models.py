@@ -28,11 +28,9 @@ class ImageState:
         if has_rocket_launched:
             self.max_frame = self.current_frame
             self.bisectFrame()
-            # self.current_frame = bisect(self.min_frame, self.current_frame)
         else:
             self.min_frame = self.current_frame
             self.bisectFrame()
-            # self.current_frame = bisect(self.current_frame, self.max_frame)
 
         self.current_image_url = changeVideoImageFrameUrl(self.current_image_url, self.current_frame)
         self.times_bisected += 1

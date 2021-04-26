@@ -14,12 +14,8 @@ class TelegramBot:
 
     @staticmethod
     def setup_bot():
-        if TelegramBot.bot:
+        if TelegramBot.bot is not None:
             return
-
-        print('_____________________________________')
-        print('SETUP')
-        print('_____________________________________')
 
         TelegramBot.bot = Bot(env('TELEGRAM_BOT_TOKEN'))
         TelegramBot.dispatcher = Dispatcher(TelegramBot.bot, None, workers=0)
@@ -42,8 +38,7 @@ def startHandler(update, context):
 
     image_data = getImageData()
     if image_data is None:
-        context.bot.send_message(chat_id=chat_id,
-                                 text="Oops! There has been an error. Please try again later.")
+        sendErrorMessage(context.bot, chat_id)
         return
 
     chat = ChatsCollection.find_one({'chat_id': chat_id})
@@ -96,3 +91,11 @@ def askForRocketLaunch(bot, chat_id, photo_url):
 
 def sendAnswer(bot, chat_id, final_frame):
     bot.send_message(chat_id=chat_id, text=f"Finished! The rocket launches at frame: {final_frame}")
+
+
+def sendErrorMessage(bot, chat_id):
+    text = "Oops! There has been an error. Please try again later or restart the game with /start."
+    bot.send_message(
+        chat_id=chat_id,
+        text=text
+    )
