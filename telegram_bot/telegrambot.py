@@ -1,8 +1,9 @@
+import os
+
 import telegram.error
 from telegram import Bot, Update
 from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters
 
-from main.settings import env
 from telegram_bot.models import ChatsCollection, ImageState
 from telegram_bot.video_service import getImageData
 
@@ -17,7 +18,7 @@ class TelegramBot:
         if TelegramBot.bot is not None:
             return
 
-        TelegramBot.bot = Bot(env('TELEGRAM_BOT_TOKEN'))
+        TelegramBot.bot = Bot(os.getenv('TELEGRAM_BOT_TOKEN'))
         TelegramBot.dispatcher = Dispatcher(TelegramBot.bot, None, workers=0)
 
         # Handlers
