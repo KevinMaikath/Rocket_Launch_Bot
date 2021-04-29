@@ -127,3 +127,12 @@ python manage.py runserver
 
 This project is fully prepared to be deployed using [Heroku](https://www.heroku.com). Just follow the official
 documentation and remember to set up all the environment variables needed for this project before deploying it.
+
+## Telegram Chatbot usage
+
+After creating a new chat with the bot, the bot can currently handle two different actions:
+
+* `/start` Use this command to start or restart the rocket-launch frame guessing.
+* Once the guessing process has started, the bot will keep sending you an image and asking you whether the rocket has
+  been launched yet or not. You can answer the bot by sending "yes" or "no".
+* When the bot has got enough data to guess the exact frame, it will notify you with the final result.
