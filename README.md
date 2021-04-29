@@ -59,9 +59,7 @@ Once you've created your bot, you can connect it to the Django API as follows:
    to:
 
 ```html
-https://api.telegram.org/bot
-<TELEGRAM_BOT_TOKEN>/setWebhook?url=
-    <URL_TO_YOUR_API_WEBHOOK>
+https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook?url=<URL_TO_YOUR_API_WEBHOOK>
 ```
 
 ### Dependencies
